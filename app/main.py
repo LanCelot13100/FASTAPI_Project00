@@ -1,14 +1,18 @@
-from fastapi import FastAPI, Form
-from fastapi.responses import FileResponse
-app = FastAPI()
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 
-@app.get('/')
-def root():
-    return FileResponse("index.html")
 
-@app.post('/calculate')
-def calculate(num1: int = Form(ge=0, lt=111), num2: int = Form(ge=0, lt=111)):
-    return {f'{num1+num2}'}
 
-#  uvicorn app.main:app --reload  <- to start the app
+app = FastAPI()  # <- our App
 
+
+class UserCreate(BaseModel):
+    name: str
+    email: str
+    age: int
+    is_subscribed: bool
+
+
+@app.post("/create_user")
+async def create_user(user: UserCreate):
+    return {"name": user.name, "email": user.email, "age": user.age, "is_subscribed": user.is_subscribed}
